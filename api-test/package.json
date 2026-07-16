@@ -1,0 +1,89 @@
+{
+  "name": "smartsend-api-tests",
+  "version": "1.0.0",
+  "description": "Automated API tests for Smartsend Mobile App",
+  "main": "index.js",
+  "scripts": {
+    "test": "node runTestsSmartsend.js",
+    "test:sm": "jest tests/send-money/CAD-NGN.test.js",
+    "test:ci": "node runTestsSmartsend.js all",
+    "test:direct": "npx jest --runInBand --config jest.config.smartsend.js"
+  },
+  "keywords": [
+    "api",
+    "testing",
+    "jest",
+    "supertest",
+    "smartsend"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "supertest": "^7.1.4"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.29.7",
+    "@babel/preset-env": "^7.29.7",
+    "@faker-js/faker": "^10.4.0",
+    "babel-jest": "^29.7.0",
+    "chai": "^4.5.0",
+    "jest": "^29.7.0",
+    "jest-html-reporters": "^3.1.7",
+    "jest-junit": "^16.0.0"
+  },
+  "jest": {
+    "setupFiles": [
+      "<rootDir>/jest.setup.js"
+    ],
+    "testMatch": [
+      "**/*.test.js"
+    ],
+    "testPathIgnorePatterns": [
+      "/node_modules/"
+    ],
+    "testTimeout": 300000,
+    "maxWorkers": 1,
+    "reporters": [
+      "default",
+      [
+        "jest-html-reporters",
+        {
+          "publicPath": "./reports",
+          "filename": "all-tests-report.html",
+          "pageTitle": "Smartsend API - Complete Test Report",
+          "expand": true,
+          "hideIcon": false,
+          "includeFailureMsg": true,
+          "includeConsoleLog": false,
+          "enableMergeData": true,
+          "dataMergeLevel": 1
+        }
+      ]
+    ],
+    "coverageDirectory": "./reports/coverage",
+    "coverageReporters": [
+      "text",
+      "lcov",
+      "html"
+    ],
+    "collectCoverageFrom": [
+      "**/*.js",
+      "!**/*.test.js",
+      "!**/node_modules/**",
+      "!**/reports/**",
+      "!**/coverage/**"
+    ],
+    "transform": {
+      "^.+\\.js$": "babel-jest"
+    },
+    "transformIgnorePatterns": [
+      "/node_modules/(?!@faker-js/faker)"
+    ],
+    "moduleFileExtensions": [
+      "js",
+      "json",
+      "node"
+    ]
+  }
+}

@@ -1,0 +1,115 @@
+name: API Integration Tests
+
+on:
+  workflow_call:
+  workflow_dispatch:
+
+jobs:
+  api-tests:
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: rootpassword
+          MYSQL_DATABASE: test
+          MYSQL_USER: ci
+          MYSQL_PASSWORD: ci_password
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+
+    steps:
+      # Checkout backend repo
+      - name: Checkout backend-api
+        uses: actions/checkout@v5
+        with:
+          path: backend-api
+
+      # Checkout test repo
+      - name: Checkout backend-api-tests
+        uses: actions/checkout@v5
+        with:
+          repository: smartsend/backend-api-tests
+          token: ${{ secrets.TEST_REPO_PAT }}
+          path: backend-api-tests
+
+      - name: Setup backend-api-tests env
+        working-directory: backend-api-tests
+        env:
+          TEST_REPO_DOT_ENV: ${{ secrets.TEST_REPO_DOT_ENV }}
+        run: |
+          echo "$TEST_REPO_DOT_ENV" | base64 --decode > .env
+
+      - name: Setup Node
+        uses: actions/setup-node@v5
+        with:
+          node-version-file: backend-api/.nvmrc
+
+      - name: Setup backend env
+        working-directory: backend-api
+        env:
+          DOT_ENV_TEST: ${{ secrets.DOT_ENV_TEST }}
+        run: echo "$DOT_ENV_TEST" | base64 --decode > .env.test
+
+      - name: Install backend dependencies
+        working-directory: backend-api
+        run: yarn install --frozen-lockfile
+
+      - name: Run migrations
+        working-directory: backend-api
+        run: |
+          cp .env.test .env.development
+          npx sequelize-cli db:migrate
+
+      - name: Seed database
+        working-directory: backend-api
+        env:
+          NODE_OPTIONS: --import ./register-loader.js
+        run: |
+          node scripts/seeds/rolesSeed.js
+          node scripts/seeds/seed.runner.js
+          node scripts/seeds/ciTestAccountsSeed.js
+
+      - name: Start backend
+        working-directory: backend-api
+        run: node --import ./register-loader.js server.js &
+        env:
+          PORT: 4000
+
+      - name: Wait for backend
+        run: |
+          for i in $(seq 1 30); do
+            if curl -s http://localhost:4000/health > /dev/null; then
+              echo "Backend ready"
+              exit 0
+            fi
+            sleep 2
+          done
+          exit 1
+
+      - name: Install test dependencies
+        working-directory: backend-api-tests
+        run: npm install
+
+      - name: Run tests
+        working-directory: backend-api-tests
+        run: npm test all
+
+      - name: Upload test reports
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: test-reports
+          path: backend-api-tests/reports/
+          retention-days: 14

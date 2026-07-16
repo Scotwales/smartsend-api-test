@@ -1,0 +1,17 @@
+{
+  "customer": {
+    "email": "testcustomer@smartsend.com",
+    "password": "Password@2",
+    "userType": "Customer"
+  },
+  "dispatcher": {
+    "email": "testdispatcher@smartsend.com",
+    "password": "Password@2",
+    "userType": "Dispatcher"
+  },
+  "admin": {
+    "email": "testadmin@smartsend.com",
+    "password": "Password@2",
+    "userType": "Admin"
+  }
+}
