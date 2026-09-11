@@ -4,6 +4,7 @@ module.exports = {
     './update-user-profile.test.js',
     './update-password.test.js',
     './update-kyc-level.test.js',
-    './reset-transaction-pin.test.js'
+    './reset-transaction-pin.test.js',
+    './close-account.test.js'
   ]
 };

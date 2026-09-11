@@ -5,9 +5,10 @@ const { STATUS, SWAP_DEAL } = require('../test-data/constants');
  * Creates a fully initiated + proceeded swap deal and returns its ID
  * @param {string} baseUrl - API base URL
  * @param {Object} customer - Customer object with token and deviceToken
+ * @param {number} [amount=200000] - Amount to send
  * @returns {Promise<string|null>} Swap deal ID or null on failure
  */
-async function createSwapDeal(baseUrl, customer) {
+async function createSwapDeal(baseUrl, customer, amount = 200000) {
   const src = await request(baseUrl)
     .get(SWAP_DEAL.SOURCE_CURRENCIES)
     .set('Authorization', `Bearer ${customer.token}`)
@@ -26,8 +27,6 @@ async function createSwapDeal(baseUrl, customer) {
   if (dest.status !== STATUS.OK || !dest.body.data?.length) return null;
   const destId = dest.body.data[0].id;
 
-  const amount = 200000;
-
   const init = await request(baseUrl)
     .post(SWAP_DEAL.INITIATE)
     .set('Authorization', `Bearer ${customer.token}`)
@@ -39,11 +38,9 @@ async function createSwapDeal(baseUrl, customer) {
 
   const rate = parseFloat(init.body.data.exchange_rate);
   const useDivision = init.body.data.exchange_rate_currency && !init.body.data.exchange_rate_currency.startsWith('1 ');
-  const totalAmount = init.body.data.reciever_gets > 0
-    ? parseInt(init.body.data.reciever_gets)
-    : useDivision
-      ? Math.floor((amount / rate) * 100) / 100
-      : Math.floor(amount * rate);
+  const totalAmount = useDivision
+    ? Math.floor((amount / rate) * 100) / 100
+    : Math.floor(amount * rate);
 
   const proceed = await request(baseUrl)
     .post(SWAP_DEAL.PROCEED)

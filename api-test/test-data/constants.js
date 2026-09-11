@@ -42,12 +42,34 @@ const USER = {
   PROFILE: 'mobile/user',
   UPDATE_PROFILE: 'mobile/user/update',
   PASSWORD_RESET: 'mobile/user/password-reset',
-  TRANSACTION_PIN_RESET: 'mobile/user/transaction-pin-reset'
+  TRANSACTION_PIN_RESET: 'mobile/user/transaction-pin-reset',
+  DELETE_ACCOUNT: 'mobile/user/delete'
 }
 
 const BUSINESS_ADMIN = {
   UPDATE_KYC: 'business/admin/users/kyc-level'
 }
+
+const KYC = {
+  LEVEL_TWO_DOCUMENT_UPLOAD: 'mobile/kyc/kyc-level-2-document-upload'
+};
+
+const KYC_DOCUMENT_TYPE = {
+  PAY_SLIP: 'PAY_SLIP',
+  BANK_STATEMENT: 'BANK_STATEMENT',
+  TAX_RETURN: 'TAX_RETURN',
+  INVESTMENT_CERTIFICATES: 'INVESTMENT_CERTIFICATES',
+  CONTRACT_NOTES: 'CONTRACT_NOTES',
+  SIGNED_WILL: 'SIGNED_WILL',
+  GIFT_DECLARATION: 'GIFT_DECLARATION',
+  LOAN_AGREEMENT: 'LOAN_AGREEMENT',
+  SIGNED_SALES_CONTRACT: 'SIGNED_SALES_CONTRACT',
+  PROPERTY_OWNERSHIP_DOCUMENTS: 'PROPERTY_OWNERSHIP_DOCUMENTS',
+  OTHERS: 'OTHERS',
+  DRIVERS_LICENSE: 'DRIVERS_LICENSE',
+  PASSPORT: 'PASSPORT',
+  NATIONAL_ID: 'NATIONAL_ID'
+};
 
 const COUNTRY_ID = {
   USA : '01j9bxp7gfmg2jyvdh64esrmb8',
@@ -133,6 +155,8 @@ module.exports = {
   USER,
   SWAP_DEAL,
   BUSINESS_ADMIN,
+  KYC,
+  KYC_DOCUMENT_TYPE,
   TRANSACTION_PIN,
   BLAAIZ_COLLECTION,
 };
